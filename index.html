@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111827">
+  <title>Dega Agent</title>
+  <style>
+    :root{--bg:#0b1020;--panel:#141c2f;--panel2:#1b2740;--line:#2c3954;--text:#f4f7fb;--muted:#a7b3c9;--red:#e53945;--red2:#b91c2a;--green:#25b879;--amber:#f6b73c}
+    *{box-sizing:border-box}body{margin:0;background:linear-gradient(145deg,#0b1020,#121a2c 60%,#171526);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;min-height:100vh}
+    button,input{font:inherit}button{cursor:pointer} .wrap{width:min(1100px,100%);margin:auto;padding:22px}
+    .brand{display:flex;align-items:center;gap:12px;font-size:22px;font-weight:800;letter-spacing:.2px}.logo{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:linear-gradient(145deg,#ff5964,#b91c2a);box-shadow:0 8px 25px #e5394533;font-weight:900}
+    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px}.tag{font-size:12px;color:#ffd5d7;background:#53212c;border:1px solid #81313d;padding:6px 10px;border-radius:99px}
+    .auth-layout{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:stretch;max-width:900px;margin:4vh auto}
+    .hero,.card{background:#141c2fdd;border:1px solid var(--line);border-radius:22px;padding:30px;box-shadow:0 20px 55px #0003}
+    .hero{display:flex;flex-direction:column;justify-content:center;background:radial-gradient(circle at 90% 15%,#67202d88,transparent 45%),#141c2f}
+    .hero h1{font-size:clamp(30px,4vw,48px);line-height:1.1;margin:14px 0}.hero p,.muted{color:var(--muted);line-height:1.6}.feature{display:flex;gap:10px;margin-top:14px;color:#d9e2f2}.feature span{color:#ff6872}
+    h2{margin:0 0 8px;font-size:25px}.sub{margin:0 0 24px;color:var(--muted);font-size:14px}
+    label{display:block;font-size:13px;color:#d5deed;margin:15px 0 7px}input{width:100%;background:#0c1323;border:1px solid #33415d;border-radius:11px;padding:13px 14px;color:var(--text);outline:none}input:focus{border-color:#ff5964;box-shadow:0 0 0 3px #e5394522}
+    .btn{border:0;border-radius:11px;padding:13px 16px;font-weight:750;color:white;background:linear-gradient(135deg,var(--red),var(--red2));width:100%;margin-top:18px}.btn:hover{filter:brightness(1.08)}.btn.secondary{background:#26344e;border:1px solid #3a4b69}.btn.small{width:auto;margin:0;padding:8px 11px;font-size:12px}.linkbtn{border:0;background:none;color:#ff7b83;font-weight:700;padding:8px}.switch{text-align:center;margin-top:15px;color:var(--muted);font-size:14px}.notice{border-radius:11px;padding:12px 14px;background:#352b17;color:#ffdf9a;border:1px solid #655024;font-size:13px;line-height:1.5;margin-top:16px}.notice.red{background:#3b1c26;border-color:#6b2a39;color:#ffbec4}
+    .hidden{display:none!important}.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:24px}.title h1{margin:0;font-size:28px}.title p{margin:5px 0 0;color:var(--muted);font-size:14px}.nav{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 24px}.nav button{background:#172239;color:#c5d0e4;border:1px solid #34415b;border-radius:10px;padding:10px 14px;font-weight:700}.nav button.active{background:#64232e;border-color:#b83a47;color:white}
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}.stat{padding:18px;background:var(--panel);border:1px solid var(--line);border-radius:15px}.stat small{color:var(--muted)}.stat strong{display:block;font-size:27px;margin-top:7px}
+    .panel{background:var(--panel);border:1px solid var(--line);border-radius:17px;padding:20px;margin-bottom:18px}.panel-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:16px}.panel h3{margin:0;font-size:18px}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:650px}th,td{text-align:left;padding:13px 12px;border-bottom:1px solid #2b3851;font-size:13px;white-space:nowrap}th{color:#aebbd0;font-weight:700;background:#111a2b}td{color:#e4eaf4}tr:last-child td{border-bottom:0}.pill{display:inline-block;padding:5px 8px;border-radius:99px;font-size:11px;font-weight:800}.pending{background:#453618;color:#ffd778}.approved{background:#123d30;color:#73e6b5}.rejected{background:#4a2029;color:#ff9da6}.empty{text-align:center;padding:30px;color:var(--muted)}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}.form-grid .full{grid-column:1/-1}.form-actions{display:flex;gap:10px}.form-actions .btn{flex:1}.footer{padding:20px 0;text-align:center;color:#7e8aa1;font-size:12px}
+    @media(max-width:760px){.wrap{padding:15px}.auth-layout{grid-template-columns:1fr;margin:0 auto}.hero{padding:23px}.hero h1{font-size:32px}.card{padding:23px}.hero .feature{display:none}.stats{grid-template-columns:1fr 1fr}.stats .stat:last-child{grid-column:1/-1}.form-grid{grid-template-columns:1fr}.form-grid .full{grid-column:auto}.title h1{font-size:24px}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><div class="logo">D</div><span>Dega Agent</span></div>
+    <span class="tag">AGENT MANAGEMENT</span>
+  </header>
+
+  <main id="authScreen">
+    <div class="auth-layout">
+      <section class="hero">
+        <span class="tag" style="width:max-content">WELCOME</span>
+        <h1>Manage your shops.<br><span style="color:#ff6872">One simple place.</span></h1>
+        <p>Sign in to your account to manage your shops and view the latest information approved by the administrator.</p>
+        <div class="feature"><span>●</span> Account approval workflow</div>
+        <div class="feature"><span>●</span> Shop list and balance overview</div>
+        <div class="feature"><span>●</span> Admin-managed requests</div>
+      </section>
+      <section class="card">
+        <div id="loginForm">
+          <h2>Welcome back</h2><p class="sub">Sign in to continue to Dega Agent.</p>
+          <form id="signIn">
+            <label for="loginUser">Username</label><input id="loginUser" autocomplete="username" required placeholder="Enter username">
+            <label for="loginPass">Password</label><input id="loginPass" type="password" autocomplete="current-password" required placeholder="Enter password">
+            <button class="btn" type="submit">Login</button>
+          </form>
+          <div class="switch">Don't have an account? <button class="linkbtn" id="showRegister">Create Account</button></div>
+          <div class="notice">New accounts must be approved by an administrator before they can log in.</div>
+        </div>
+        <div id="registerForm" class="hidden">
+          <h2>Create account</h2><p class="sub">Submit your details for admin approval.</p>
+          <form id="signUp">
+            <label for="regFull">Full Name</label><input id="regFull" autocomplete="name" required placeholder="Your full name">
+            <label for="regPhone">Phone Number</label><input id="regPhone" type="tel" autocomplete="tel" required placeholder="Your phone number">
+            <label for="regUser">Username</label><input id="regUser" autocomplete="username" required minlength="3" placeholder="Create username">
+            <label for="regPass">Password</label><input id="regPass" type="password" autocomplete="new-password" required minlength="8" placeholder="At least 8 characters">
+            <button class="btn" type="submit">Create Account</button>
+          </form>
+          <div class="switch">Already registered? <button class="linkbtn" id="showLogin">Back to Login</button></div>
+        </div>
+        <div id="authMessage" aria-live="polite"></div>
+      </section>
+    </div>
+  </main>
+
+  <main id="dashboard" class="hidden">
+    <div class="topbar">
+      <div class="title"><h1 id="pageTitle">Dashboard</h1><p id="welcomeText">Welcome to Dega Agent</p></div>
+      <button id="logout" class="btn secondary small">Log out</button>
+    </div>
+    <div id="agentArea" class="hidden">
+      <div class="stats">
+        <div class="stat"><small>My Shops</small><strong id="myShopCount">0</strong></div>
+        <div class="stat"><small>Pending Requests</small><strong id="myPendingCount">0</strong></div>
+        <div class="stat"><small>Account Status</small><strong style="font-size:18px;color:#73e6b5">Approved</strong></div>
+      </div>
+      <div class="nav">
+        <button class="active" data-agent-tab="myshops">My Shop</button>
+        <button data-agent-tab="newshop">Create New Shop</button>
+      </div>
+      <section id="agentMyShops" class="panel">
+        <div class="panel-head"><h3>My Shop</h3><span class="muted" style="font-size:12px">Admin-approved information</span></div>
+        <div class="table-wrap"><table><thead><tr><th>Shop ID</th><th>Username</th><th>Password</th><th>Balance</th><th>Status</th></tr></thead><tbody id="myShopsBody"></tbody></table></div>
+      </section>
+      <section id="agentNewShop" class="panel hidden">
+        <h3>Request a new shop</h3><p class="sub">Your request will be sent to the administrator for approval.</p>
+        <form id="newShopForm" class="form-grid">
+          <div><label for="shopUser">Shop Username</label><input id="shopUser" required minlength="3" placeholder="Create shop username"></div>
+          <div><label for="shopPass">Shop Password</label><input id="shopPass" required minlength="8" type="password" placeholder="Create shop password"></div>
+          <div class="full"><button class="btn" type="submit">Submit Shop Request</button></div>
+        </form>
+      </section>
+    </div>
+
+    <div id="adminArea" class="hidden">
+      <div class="stats">
+        <div class="stat"><small>Total Shops</small><strong id="allShopCount">0</strong></div>
+        <div class="stat"><small>Agents</small><strong id="agentCount">0</strong></div>
+        <div class="stat"><small>Pending Requests</small><strong id="requestCount">0</strong></div>
+      </div>
+      <div class="nav">
+        <button class="active" data-admin-tab="allshops">All Shop</button>
+        <button data-admin-tab="agents">Agent</button>
+        <button data-admin-tab="requests">Request</button>
+      </div>
+      <section id="adminAllShops" class="panel">
+        <div class="panel-head"><h3>All Shop</h3><span class="muted" style="font-size:12px">Admin can edit balance and shop details</span></div>
+        <div class="table-wrap"><table><thead><tr><th>Shop ID</th><th>Username</th><th>Password</th><th>Agent</th><th>Balance</th><th>Status</th><th>Action</th></tr></thead><tbody id="allShopsBody"></tbody></table></div>
+      </section>
+      <section id="adminAgents" class="panel hidden">
+        <div class="panel-head"><h3>Agents</h3></div>
+        <div class="table-wrap"><table><thead><tr><th>Agent Name</th><th>Username</th><th>Password</th><th>Shops</th><th>Status</th><th>Action</th></tr></thead><tbody id="agentsBody"></tbody></table></div>
+      </section>
+      <section id="adminRequests" class="panel hidden">
+        <div class="panel-head"><h3>Requests</h3><span class="muted" style="font-size:12px">Account and shop requests</span></div>
+        <div class="table-wrap"><table><thead><tr><th>Type</th><th>Name / Username</th><th>Phone / Agent</th><th>Submitted</th><th>Action</th></tr></thead><tbody id="requestsBody"></tbody></table></div>
+      </section>
+    </div>
+    <div id="dashboardMessage" aria-live="polite"></div>
+  </main>
+  <div class="footer">Dega Agent · Secure account management</div>
+</div>
+
+<!-- Frontend preview only. Connect Supabase before using with real users or balances. -->
+<script>
+(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const DEMO_KEY = 'dega_agent_demo_v1';
+  let currentUser = null;
+  let state = {agents:[], shops:[], requests:[]};
+
+  function escapeHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  }
+  function message(id, text, type='') {
+    $(id).innerHTML = text ? `<div class="notice ${type}">${escapeHtml(text)}</div>` : '';
+  }
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(DEMO_KEY);
+      if (raw) state = JSON.parse(raw);
+    } catch (_) {}
+    if (!Array.isArray(state.agents)) state.agents = [];
+    if (!Array.isArray(state.shops)) state.shops = [];
+    if (!Array.isArray(state.requests)) state.requests = [];
+  }
+  function saveState() {
+    try { localStorage.setItem(DEMO_KEY, JSON.stringify(state)); }
+    catch (_) { message('dashboardMessage','Could not save preview data in this browser.','red'); }
+  }
+  function showAuth(which) {
+    $('authScreen').classList.remove('hidden'); $('dashboard').classList.add('hidden');
+    $('loginForm').classList.toggle('hidden', which !== 'login');
+    $('registerForm').classList.toggle('hidden', which !== 'register');
+    message('authMessage','');
+  }
+  function statusPill(status) {
+    const cls = status === 'approved' ? 'approved' : status === 'rejected' ? 'rejected' : 'pending';
+    return `<span class="pill ${cls}">${escapeHtml(status || 'pending').toUpperCase()}</span>`;
+  }
+  function noRows(cols, text) { return `<tr><td colspan="${cols}" class="empty">${escapeHtml(text)}</td></tr>`; }
+  function render() {
+    $('myShopCount').textContent = state.shops.filter(s=>s.agentId===currentUser?.id && s.status==='approved').length;
+    $('myPendingCount').textContent = state.requests.filter(r=>r.agentId===currentUser?.id && r.status==='pending').length;
+    const mine = state.shops.filter(s=>s.agentId===currentUser?.id && s.status==='approved');
+    $('myShopsBody').innerHTML = mine.length ? mine.map(s=>`<tr><td>${escapeHtml(s.shopId || 'Pending ID')}</td><td>${escapeHtml(s.username)}</td><td>••••••••</td><td>${Number(s.balance||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</td><td>${statusPill(s.status)}</td></tr>`).join('') : noRows(5,'No approved shops yet.');
+    $('allShopCount').textContent = state.shops.filter(s=>s.status==='approved').length;
+    $('agentCount').textContent = state.agents.filter(a=>a.status==='approved').length;
+    $('requestCount').textContent = state.requests.filter(r=>r.status==='pending').length;
+    const all = state.shops.filter(s=>s.status==='approved');
+    $('allShopsBody').innerHTML = all.length ? all.map(s=>`<tr><td>${escapeHtml(s.shopId)}</td><td>${escapeHtml(s.username)}</td><td>••••••••</td><td>${escapeHtml(state.agents.find(a=>a.id===s.agentId)?.fullName || 'Unknown')}</td><td>${Number(s.balance||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</td><td>${statusPill(s.status)}</td><td><button class="btn small" data-edit-shop="${escapeHtml(s.id)}">Edit</button></td></tr>`).join('') : noRows(7,'No approved shops yet.');
+    const agents = state.agents.filter(a=>a.status==='approved');
+    $('agentsBody').innerHTML = agents.length ? agents.map(a=>`<tr><td>${escapeHtml(a.fullName)}</td><td>${escapeHtml(a.username)}</td><td>••••••••</td><td>${state.shops.filter(s=>s.agentId===a.id && s.status==='approved').length}</td><td>${statusPill(a.status)}</td><td><button class="btn secondary small" data-delete-agent="${escapeHtml(a.id)}">Delete</button></td></tr>`).join('') : noRows(6,'No approved agents yet.');
+    const pending = state.requests.filter(r=>r.status==='pending');
+    $('requestsBody').innerHTML = pending.length ? pending.map(r=>`<tr><td>${r.type==='agent'?'Agent Account':'New Shop'}</td><td>${escapeHtml(r.fullName || r.username)}</td><td>${escapeHtml(r.phone || state.agents.find(a=>a.id===r.agentId)?.fullName || '')}</td><td>${escapeHtml(r.createdAt)}</td><td><button class="btn small" data-approve="${escapeHtml(r.id)}">Approve</button> <button class="btn secondary small" data-reject="${escapeHtml(r.id)}">Reject</button></td></tr>`).join('') : noRows(5,'No pending requests.');
+  }
+  function openDashboard(user) {
+    currentUser = user;
+    $('authScreen').classList.add('hidden'); $('dashboard').classList.remove('hidden');
+    $('agentArea').classList.toggle('hidden', user.role!=='agent');
+    $('adminArea').classList.toggle('hidden', user.role!=='admin');
+    $('pageTitle').textContent = user.role==='admin' ? 'Admin Panel' : 'Agent Dashboard';
+    $('welcomeText').textContent = user.role==='admin' ? 'Manage agents, shops and requests.' : `Welcome, ${user.fullName}.`;
+    message('dashboardMessage','');
+    render();
+  }
+  $('showRegister').addEventListener('click',()=>showAuth('register'));
+  $('showLogin').addEventListener('click',()=>showAuth('login'));
+  $('signUp').addEventListener('submit',e=>{
+    e.preventDefault(); loadState();
+    const fullName=$('regFull').value.trim(), phone=$('regPhone').value.trim(), username=$('regUser').value.trim();
+    const password=$('regPass').value;
+    if(username.toLowerCase()==='admin' || state.agents.some(a=>a.username.toLowerCase()===username.toLowerCase())) return message('authMessage','That username is unavailable.','red');
+    if(password.length<8) return message('authMessage','Password must contain at least 8 characters.','red');
+    const agent={id:crypto.randomUUID?.() || String(Date.now()),fullName,phone,username,password,status:'pending'};
+    state.agents.push(agent);
+    state.requests.push({id:String(Date.now())+'a',type:'agent',agentId:agent.id,fullName,phone,username,status:'pending',createdAt:new Date().toLocaleString()});
+    saveState(); e.target.reset(); showAuth('login');
+    message('authMessage','Account request submitted. An administrator must approve it before you can log in.');
+  });
+  $('signIn').addEventListener('submit',e=>{
+    e.preventDefault(); loadState();
+    const username=$('loginUser').value.trim(), password=$('loginPass').value;
+    // Demo-only local preview: replace this with Supabase Auth and server-side role checks.
+    if(username==='admin' && password==='SET_ADMIN_PASSWORD') return message('authMessage','Demo admin sign-in is disabled until secure Supabase setup. Do not use a hard-coded password.','red');
+    const agent=state.agents.find(a=>a.username.toLowerCase()===username.toLowerCase() && a.password===password);
+    if(!agent) return message('authMessage','Invalid username/password, or account has not been approved.','red');
+    if(agent.status!=='approved') return message('authMessage','Your account is awaiting administrator approval.','');
+    openDashboard({...agent,role:'agent'});
+  });
+  $('logout').addEventListener('click',()=>{currentUser=null;$('signIn').reset();showAuth('login');});
+  document.querySelectorAll('[data-agent-tab]').forEach(btn=>btn.addEventListener('click',()=>{
+    document.querySelectorAll('[data-agent-tab]').forEach(b=>b.classList.toggle('active',b===btn));
+    $('agentMyShops').classList.toggle('hidden',btn.dataset.agentTab!=='myshops');
+    $('agentNewShop').classList.toggle('hidden',btn.dataset.agentTab!=='newshop');
+  }));
+  document.querySelectorAll('[data-admin-tab]').forEach(btn=>btn.addEventListener('click',()=>{
+    document.querySelectorAll('[data-admin-tab]').forEach(b=>b.classList.toggle('active',b===btn));
+    $('adminAllShops').classList.toggle('hidden',btn.dataset.adminTab!=='allshops');
+    $('adminAgents').classList.toggle('hidden',btn.dataset.adminTab!=='agents');
+    $('adminRequests').classList.toggle('hidden',btn.dataset.adminTab!=='requests');
+  }));
+  $('newShopForm').addEventListener('submit',e=>{
+    e.preventDefault(); loadState();
+    const username=$('shopUser').value.trim(), password=$('shopPass').value;
+    if(state.shops.some(s=>s.username.toLowerCase()===username.toLowerCase())) return message('dashboardMessage','That shop username is already in use.','red');
+    if(password.length<8) return message('dashboardMessage','Shop password must contain at least 8 characters.','red');
+    const shop={id:String(Date.now()),shopId:'',agentId:currentUser.id,username,password,balance:0,status:'pending'};
+    state.shops.push(shop);
+    state.requests.push({id:String(Date.now())+'s',type:'shop',shopId:shop.id,agentId:currentUser.id,username,status:'pending',createdAt:new Date().toLocaleString()});
+    saveState();e.target.reset();render();message('dashboardMessage','Shop request submitted for administrator approval.');
+  });
+  document.addEventListener('click',e=>{
+    const approve=e.target.closest('[data-approve]')?.dataset.approve;
+    const reject=e.target.closest('[data-reject]')?.dataset.reject;
+    const edit=e.target.closest('[data-edit-shop]')?.dataset.editShop;
+    const del=e.target.closest('[data-delete-agent]')?.dataset.deleteAgent;
+    if(approve){
+      const r=state.requests.find(x=>x.id===approve); if(!r)return;
+      r.status='approved';
+      if(r.type==='agent'){const a=state.agents.find(x=>x.id===r.agentId);if(a)a.status='approved';}
+      else {const s=state.shops.find(x=>x.id===r.shopId);if(s){s.status='approved';s.shopId='DG'+String(Date.now()).slice(-7);}}
+      saveState();render();
+    } else if(reject){
+      const r=state.requests.find(x=>x.id===reject);if(!r)return;r.status='rejected';
+      if(r.type==='agent'){const a=state.agents.find(x=>x.id===r.agentId);if(a)a.status='rejected';}
+      else {const s=state.shops.find(x=>x.id===r.shopId);if(s)s.status='rejected';}
+      saveState();render();
+    } else if(edit){
+      const s=state.shops.find(x=>x.id===edit);if(!s)return;
+      const value=prompt(`Set balance for shop ${s.shopId} (number only):`,String(s.balance||0));
+      if(value===null)return;
+      const n=Number(value);if(!Number.isFinite(n)||n<0){alert('Enter a valid balance of 0 or more.');return;}
+      s.balance=n;saveState();render();
+    } else if(del){
+      if(!confirm('Delete this agent and hide their shops?'))return;
+      state.agents=state.agents.filter(a=>a.id!==del);
+      state.shops=state.shops.filter(s=>s.agentId!==del);
+      state.requests=state.requests.filter(r=>r.agentId!==del);
+      saveState();render();
+    }
+  });
+  loadState();
+})();
+</script>
+</body>
+</html>
