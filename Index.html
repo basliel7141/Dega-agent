@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101525">
+<title>Dega Agent</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1020;--panel:#151d30;--panel2:#1b2740;--line:#2b3852;--text:#f4f6fb;--muted:#aab5c8;--red:#d93443;--red2:#a91f30;--green:#27b780;--amber:#f4bd55}
+*{box-sizing:border-box}
+html{min-height:100%;background:var(--bg)}
+body{margin:0;min-height:100vh;background:radial-gradient(circle at 80% 0,#3b1724 0,transparent 30%),linear-gradient(145deg,#0b1020,#11192a 65%,#171324);color:var(--text);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+button,input{font:inherit}button{cursor:pointer}button:disabled{opacity:.6;cursor:wait}
+.wrap{width:min(1120px,100%);margin:auto;padding:22px}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:28px}
+.brand{display:flex;align-items:center;gap:11px;font-size:22px;font-weight:850}
+.logo{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:linear-gradient(145deg,#ff5b68,#a91f30);box-shadow:0 8px 24px #d9344333}
+.tag{display:inline-flex;align-items:center;padding:6px 10px;border-radius:99px;background:#3b202b;border:1px solid #65313e;color:#ffd9dd;font-size:11px;font-weight:800;letter-spacing:.6px}
+.hidden{display:none!important}
+.auth-layout{display:grid;grid-template-columns:1fr 420px;gap:24px;max-width:980px;margin:4vh auto}
+.hero,.card,.panel,.stat{background:#151d30;border:1px solid var(--line);border-radius:18px;box-shadow:0 18px 50px #0002}
+.hero{padding:34px;display:flex;flex-direction:column;justify-content:center;background:radial-gradient(circle at 90% 10%,#69233377,transparent 42%),#151d30}
+.hero h1{font-size:clamp(32px,4vw,48px);line-height:1.08;letter-spacing:-1px;margin:18px 0 12px}
+.hero p,.muted,.sub{color:var(--muted)}
+.hero p{line-height:1.7}
+.feature{display:flex;gap:10px;margin-top:13px;color:#dce4f2}.feature b{color:#ff6975}
+.card{padding:28px}
+h2{font-size:25px;margin:0 0 6px}.sub{font-size:14px;margin:0 0 20px}
+label{display:block;font-size:13px;font-weight:650;color:#dce3ef;margin:14px 0 7px}
+input{display:block;width:100%;min-width:0;background:#0b1222;border:1px solid #35425c;border-radius:10px;padding:13px 14px;color:var(--text);outline:none}
+input:focus{border-color:#fa6570;box-shadow:0 0 0 3px #d9344320}
+.btn{border:0;border-radius:10px;padding:12px 15px;font-weight:750;color:white;background:linear-gradient(135deg,var(--red),var(--red2))}
+.btn:hover{filter:brightness(1.08)}.btn.full{width:100%;margin-top:18px}.btn.secondary{background:#26344d;border:1px solid #3c4a66}.btn.small{font-size:12px;padding:8px 10px}
+.linkbtn{border:0;background:transparent;color:#ff7d87;font-weight:750;padding:4px}
+.switch{text-align:center;color:var(--muted);font-size:13px;margin-top:15px}
+.notice{padding:12px 14px;margin-top:15px;border-radius:10px;background:#382d18;border:1px solid #655127;color:#ffe1a0;font-size:13px;overflow-wrap:anywhere}
+.notice.red{background:#3b1c26;border-color:#74303d;color:#ffc1c7}.notice.green{background:#12362b;border-color:#24654d;color:#a6f3d2}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:20px}
+.title h1{font-size:28px;margin:0}.title p{font-size:14px;color:var(--muted);margin:4px 0 0}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin-bottom:18px}
+.stat{padding:17px}.stat small{color:var(--muted);display:block}.stat strong{display:block;font-size:27px;margin-top:5px;overflow-wrap:anywhere}
+.nav{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}
+.nav button{background:#18233a;color:#c9d3e5;border:1px solid #34415b;border-radius:10px;padding:10px 14px;font-weight:750}
+.nav button.active{background:#62232e;border-color:#a93b48;color:white}
+.panel{padding:20px;margin-bottom:18px;min-width:0}.panel-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:15px}
+.panel h3{font-size:18px;margin:0}.table-wrap{width:100%;overflow-x:auto;border-radius:10px}
+table{border-collapse:collapse;width:100%;min-width:620px;background:#121a2b}
+th,td{text-align:left;padding:12px;border-bottom:1px solid #2a3650;font-size:13px;white-space:nowrap}
+th{background:#0f1727;color:#aebbd0;font-weight:750}td{color:#e6ebf4}tr:last-child td{border-bottom:0}
+.pill{display:inline-block;padding:4px 8px;border-radius:99px;font-size:10px;font-weight:850;text-transform:uppercase}
+.pending{background:#493719;color:#ffdc83}.approved{background:#123c30;color:#7ce9ba}.rejected{background:#4a2029;color:#ffabb3}
+.empty{text-align:center;color:var(--muted);padding:24px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}.form-grid .full{grid-column:1/-1}
+.footer{text-align:center;color:#77849b;font-size:12px;padding:24px 0 8px}
+@media(max-width:760px){.wrap{padding:15px}.auth-layout{grid-template-columns:1fr;margin:0 auto}.hero{padding:24px}.hero h1{font-size:34px}.feature{display:none}.card{padding:22px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.stats .stat:last-child{grid-column:1/-1}.form-grid{grid-template-columns:1fr}.form-grid .full{grid-column:auto}.title h1{font-size:24px}.panel{padding:15px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><div class="brand"><div class="logo">D</div><span>Dega Agent</span></div><span class="tag">AGENT MANAGEMENT</span></header>
+
+<main id="authScreen">
+  <div class="auth-layout">
+    <section class="hero">
+      <span class="tag" style="width:max-content">WELCOME</span>
+      <h1>Manage your shops.<br><span style="color:#ff6975">One simple place.</span></h1>
+      <p>Sign in to manage your shops and view information approved by the administrator.</p>
+      <div class="feature"><b>✓</b> Account approval workflow</div>
+      <div class="feature"><b>✓</b> Shop list and balance overview</div>
+      <div class="feature"><b>✓</b> Admin-managed requests</div>
+    </section>
+    <section class="card">
+      <div id="loginForm">
+        <h2>Welcome back</h2><p class="sub">Sign in to continue to Dega Agent.</p>
+        <form id="signIn">
+          <label for="loginUser">Username</label><input id="loginUser" autocomplete="username" required placeholder="Enter username">
+          <label for="loginPass">Password</label><input id="loginPass" type="password" autocomplete="current-password" required placeholder="Enter password">
+          <button class="btn full" type="submit">Login</button>
+        </form>
+        <div class="switch">Don't have an account? <button class="linkbtn" id="showRegister" type="button" onclick="window.degaShowAuth && window.degaShowAuth('register')">Create Account</button></div>
+        <div class="notice">New accounts must be approved by an administrator before they can log in.</div>
+      </div>
+      <div id="registerForm" class="hidden">
+        <h2>Create account</h2><p class="sub">Submit your details for admin approval.</p>
+        <form id="signUp">
+          <label for="regFull">Full Name</label><input id="regFull" autocomplete="name" required placeholder="Your full name">
+          <label for="regPhone">Phone Number</label><input id="regPhone" type="tel" autocomplete="tel" required placeholder="Your phone number">
+          <label for="regUser">Username</label><input id="regUser" autocomplete="username" required minlength="3" placeholder="Create username">
+          <label for="regPass">Password</label><input id="regPass" type="password" autocomplete="new-password" required minlength="8" placeholder="At least 8 characters">
+          <button class="btn full" type="submit">Create Account</button>
+        </form>
+        <div class="switch">Already registered? <button class="linkbtn" id="showLogin" type="button" onclick="window.degaShowAuth && window.degaShowAuth('login')">Back to Login</button></div>
+      </div>
+      <div id="authMessage" aria-live="polite"></div>
+    </section>
+  </div>
+</main>
+
+<main id="dashboard" class="hidden">
+  <div class="topbar"><div class="title"><h1 id="pageTitle">Dashboard</h1><p id="welcomeText">Welcome to Dega Agent</p></div><button id="logout" class="btn secondary small" type="button">Log out</button></div>
+
+  <section id="agentArea" class="hidden">
+    <div class="stats">
+      <div class="stat"><small>My Shops</small><strong id="myShopCount">0</strong></div>
+      <div class="stat"><small>Pending Requests</small><strong id="myPendingCount">0</strong></div>
+      <div class="stat"><small>Account Status</small><strong style="font-size:18px;color:#7ce9ba">Approved</strong></div>
+    </div>
+    <div class="nav"><button class="active" data-agent-tab="myshops" type="button">My Shops</button><button data-agent-tab="newshop" type="button">Request New Shop</button></div>
+    <section id="agentMyShops" class="panel"><div class="panel-head"><h3>My Shops</h3><span class="muted">Admin-approved information</span></div><div class="table-wrap"><table><thead><tr><th>Shop ID</th><th>Username</th><th>Balance</th><th>Status</th></tr></thead><tbody id="myShopsBody"></tbody></table></div></section>
+    <section id="agentNewShop" class="panel hidden"><h3>Request a new shop</h3><p class="sub">Your request will be sent to the administrator for approval.</p><form id="newShopForm" class="form-grid"><div class="full"><label for="shopUser">Shop Username</label><input id="shopUser" required minlength="3" placeholder="Enter requested shop username"></div><div class="full muted" style="font-size:13px">Do not enter or share a shop password here.</div><div class="full"><button class="btn full" type="submit">Submit Shop Request</button></div></form></section>
+  </section>
+
+  <section id="adminArea" class="hidden">
+    <div class="stats">
+      <div class="stat"><small>Total Shops</small><strong id="allShopCount">0</strong></div>
+      <div class="stat"><small>Agents</small><strong id="agentCount">0</strong></div>
+      <div class="stat"><small>Pending Requests</small><strong id="requestCount">0</strong></div>
+    </div>
+    <div class="nav"><button class="active" data-admin-tab="allshops" type="button">All Shops</button><button data-admin-tab="agents" type="button">Agents</button><button data-admin-tab="requests" type="button">Requests</button></div>
+    <section id="adminAllShops" class="panel"><div class="panel-head"><h3>All Shops</h3><span class="muted">Admin can edit balances</span></div><div class="table-wrap"><table><thead><tr><th>Shop ID</th><th>Username</th><th>Agent</th><th>Balance</th><th>Status</th><th>Action</th></tr></thead><tbody id="allShopsBody"></tbody></table></div></section>
+    <section id="adminAgents" class="panel hidden"><div class="panel-head"><h3>Agents</h3></div><div class="table-wrap"><table><thead><tr><th>Agent Name</th><th>Username</th><th>Shops</th><th>Status</th><th>Action</th></tr></thead><tbody id="agentsBody"></tbody></table></div></section>
+    <section id="adminRequests" class="panel hidden"><div class="panel-head"><h3>Requests</h3><span class="muted">Account and shop requests</span></div><div class="table-wrap"><table><thead><tr><th>Type</th><th>Name / Username</th><th>Phone</th><th>Submitted</th><th>Action</th></tr></thead><tbody id="requestsBody"></tbody></table></div></section>
+  </section>
+  <div id="dashboardMessage" aria-live="polite"></div>
+</main>
+<div class="footer">Dega Agent · Secure account management</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function(){
+'use strict';
+const SUPABASE_URL='https://klxbtaytajltyvjuyzfk.supabase.co';
+const SUPABASE_ANON_KEY='sb_publishable_5vzeRroKDVePz-8eyT9Meg_nn8OAQlu';
+const AUTH_FUNCTION_URL=SUPABASE_URL+'/functions/v1/quick-handler';
+const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+const $=id=>document.getElementById(id);
+let currentUser=null,profile=null,state={agents:[],shops:[],requests:[]};
+function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function message(id,text,type){$(id).innerHTML=text?'<div class="notice '+(type||'')+'">'+esc(text)+'</div>':'';}
+function showAuth(which){$('authScreen').classList.remove('hidden');$('dashboard').classList.add('hidden');$('loginForm').classList.toggle('hidden',which!=='login');$('registerForm').classList.toggle('hidden',which!=='register');message('authMessage','');}
+window.degaShowAuth=function(which){try{showAuth(which);}catch(e){console.error('Could not switch auth form:',e);}};
+function statusPill(status){const s=status||'pending';const cls=s==='approved'?'approved':s==='rejected'?'rejected':'pending';return '<span class="pill '+cls+'">'+esc(s)+'</span>';}
+function noRows(cols,txt){return '<tr><td colspan="'+cols+'" class="empty">'+esc(txt)+'</td></tr>';}
+function fmt(n){return Number(n||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});}
+async function loadData(){
+ const results=await Promise.all([
+  db.from('profiles').select('id,username,full_name,phone,role,status,created_at'),
+  db.from('shops').select('id,agent_id,username,balance,status,created_at'),
+  db.from('requests').select('id,requester_id,request_type,details,status,created_at,reviewed_at')
+ ]);
+ const err=results.find(x=>x.error);if(err)throw err.error;
+ const pr=results[0].data||[],sh=results[1].data||[],req=results[2].data||[];
+ state.agents=pr.filter(p=>p.role==='agent');state.shops=sh;
+ state.requests=req.map(r=>({...r,details:r.details||{},createdAt:r.created_at?new Date(r.created_at).toLocaleString():''}));
+}
+function render(){
+ if(!currentUser||!profile)return;
+ const mine=state.shops.filter(s=>String(s.agent_id)===String(currentUser.id));
+ $('myShopCount').textContent=mine.filter(s=>s.status==='approved').length;
+ $('myPendingCount').textContent=state.requests.filter(r=>String(r.requester_id)===String(currentUser.id)&&r.status==='pending').length;
+ $('myShopsBody').innerHTML=mine.length?mine.map(s=>'<tr><td>'+esc(s.id)+'</td><td>'+esc(s.username)+'</td><td>'+fmt(s.balance)+'</td><td>'+statusPill(s.status)+'</td></tr>').join(''):noRows(4,'No shops yet.');
+ $('allShopCount').textContent=state.shops.length;$('agentCount').textContent=state.agents.length;$('requestCount').textContent=state.requests.filter(r=>r.status==='pending').length;
+ $('allShopsBody').innerHTML=state.shops.length?state.shops.map(s=>'<tr><td>'+esc(s.id)+'</td><td>'+esc(s.username)+'</td><td>'+esc((state.agents.find(a=>String(a.id)===String(s.agent_id))||{}).full_name||'Unknown')+'</td><td>'+fmt(s.balance)+'</td><td>'+statusPill(s.status)+'</td><td><button class="btn small" data-edit-shop="'+esc(s.id)+'" type="button">Edit balance</button></td></tr>').join(''):noRows(6,'No shops yet.');
+ $('agentsBody').innerHTML=state.agents.length?state.agents.map(a=>'<tr><td>'+esc(a.full_name)+'</td><td>'+esc(a.username)+'</td><td>'+state.shops.filter(s=>String(s.agent_id)===String(a.id)).length+'</td><td>'+statusPill(a.status)+'</td><td>'+(a.status==='pending'?'<button class="btn small" data-approve-agent="'+esc(a.id)+'" type="button">Approve</button> <button class="btn secondary small" data-reject-agent="'+esc(a.id)+'" type="button">Reject</button>':'—')+'</td></tr>').join(''):noRows(5,'No agents yet.');
+ const pending=state.requests.filter(r=>r.status==='pending');
+ $('requestsBody').innerHTML=pending.length?pending.map(r=>{const a=state.agents.find(x=>String(x.id)===String(r.requester_id));const d=r.details||{};return '<tr><td>'+ (r.request_type==='agent_registration'?'Agent Account':'New Shop')+'</td><td>'+esc(d.full_name||d.username||(a&& (a.full_name||a.username))||'—')+'</td><td>'+esc(d.phone||(a&&a.phone)||'—')+'</td><td>'+esc(r.createdAt)+'</td><td><button class="btn small" data-approve-request="'+esc(r.id)+'" type="button">Approve</button> <button class="btn secondary small" data-reject-request="'+esc(r.id)+'" type="button">Reject</button></td></tr>';}).join(''):noRows(5,'No pending requests.');
+}
+async function openDashboard(user,prof){
+ currentUser=user;profile=prof;
+ $('authScreen').classList.add('hidden');$('dashboard').classList.remove('hidden');
+ const isAdmin=prof.role==='admin';
+ $('agentArea').classList.toggle('hidden',isAdmin);$('adminArea').classList.toggle('hidden',!isAdmin);
+ $('pageTitle').textContent=isAdmin?'Admin Panel':'Agent Dashboard';
+ $('welcomeText').textContent=isAdmin?'Manage agents, shops and requests.':'Welcome, '+(prof.full_name||prof.username||'Agent')+'.';
+ message('dashboardMessage','');
+ try{await loadData();render();}catch(e){message('dashboardMessage','Could not load dashboard data: '+(e.message||'Check Supabase policies.'),'red');}
+}
+async function callAuth(action,payload){
+ const res=await fetch(AUTH_FUNCTION_URL,{method:'POST',headers:{'Content-Type':'application/json','apikey':SUPABASE_ANON_KEY,'Authorization':'Bearer '+SUPABASE_ANON_KEY},body:JSON.stringify({action,...payload})});
+ const data=await res.json().catch(()=>({error:'Server returned an invalid response.'}));
+ if(!res.ok)throw new Error(data.error||data.message||('Authentication request failed ('+res.status+').'));
+ return data;
+}
+$('showRegister').addEventListener('click',()=>showAuth('register'));
+$('showLogin').addEventListener('click',()=>showAuth('login'));
+$('signUp').addEventListener('submit',async function(e){
+ e.preventDefault();const btn=e.submitter;btn.disabled=true;btn.textContent='Submitting…';
+ try{const full_name=$('regFull').value.trim(),phone=$('regPhone').value.trim(),username=$('regUser').value.trim(),password=$('regPass').value;
+ if(password.length<8)throw new Error('Password must contain at least 8 characters.');
+ await callAuth('signup',{full_name,phone,username,password});e.target.reset();showAuth('login');message('authMessage','Registration submitted. Wait for administrator approval.','green');
+ }catch(err){message('authMessage',err.message||'Registration failed.','red');}finally{btn.disabled=false;btn.textContent='Create Account';}
+});
+$('signIn').addEventListener('submit',async function(e){
+ e.preventDefault();const btn=e.submitter;btn.disabled=true;btn.textContent='Signing in…';
+ try{const username=$('loginUser').value.trim(),password=$('loginPass').value;const data=await callAuth('login',{username,password});
+ if(!data.session||!data.profile)throw new Error('Login service response is incomplete.');
+ const {error}=await db.auth.setSession(data.session);if(error)throw error;
+ if(data.profile.status!=='approved'){await db.auth.signOut();throw new Error(data.profile.status==='rejected'?'Your account was rejected.':'Your account is awaiting administrator approval.');}
+ await openDashboard(data.session.user,data.profile);
+ }catch(err){message('authMessage',err.message||'Login failed.','red');}finally{btn.disabled=false;btn.textContent='Login';}
+});
+$('logout').addEventListener('click',async()=>{await db.auth.signOut();currentUser=null;profile=null;$('signIn').reset();showAuth('login');});
+document.querySelectorAll('[data-agent-tab]').forEach(btn=>btn.addEventListener('click',()=>{
+ document.querySelectorAll('[data-agent-tab]').forEach(b=>b.classList.toggle('active',b===btn));
+ $('agentMyShops').classList.toggle('hidden',btn.dataset.agentTab!=='myshops');$('agentNewShop').classList.toggle('hidden',btn.dataset.agentTab!=='newshop');
+}));
+document.querySelectorAll('[data-admin-tab]').forEach(btn=>btn.addEventListener('click',()=>{
+ document.querySelectorAll('[data-admin-tab]').forEach(b=>b.classList.toggle('active',b===btn));
+ $('adminAllShops').classList.toggle('hidden',btn.dataset.adminTab!=='allshops');$('adminAgents').classList.toggle('hidden',btn.dataset.adminTab!=='agents');$('adminRequests').classList.toggle('hidden',btn.dataset.adminTab!=='requests');
+}));
+$('newShopForm').addEventListener('submit',async function(e){
+ e.preventDefault();const btn=e.submitter;btn.disabled=true;
+ try{const username=$('shopUser').value.trim();const {data:existing,error:checkErr}=await db.from('shops').select('id').ilike('username',username).limit(1);if(checkErr)throw checkErr;if(existing&&existing.length)throw new Error('That shop username is already in use.');
+ const {error}=await db.from('requests').insert({requester_id:currentUser.id,request_type:'shop_creation',details:{username},status:'pending'});if(error)throw error;e.target.reset();await loadData();render();message('dashboardMessage','Shop request submitted for administrator approval.','green');
+ }catch(err){message('dashboardMessage',err.message||'Could not submit request. Check Supabase permissions.','red');}finally{btn.disabled=false;}
+});
+document.addEventListener('click',async function(e){
+ const target=e.target.closest('button');if(!target)return;
+ const edit=target.dataset.editShop,approveReq=target.dataset.approveRequest,rejectReq=target.dataset.rejectRequest,approveAgent=target.dataset.approveAgent,rejectAgent=target.dataset.rejectAgent;
+ try{
+  if(edit!==undefined){const shop=state.shops.find(s=>String(s.id)===String(edit));if(!shop)return;const value=prompt('Set balance for shop '+shop.id+' (number only):',String(shop.balance||0));if(value===null)return;const n=Number(value);if(!Number.isFinite(n)||n<0)throw new Error('Enter a valid balance of 0 or more.');const {error}=await db.from('shops').update({balance:n}).eq('id',shop.id);if(error)throw error;
+  }else if(approveAgent||rejectAgent){const id=approveAgent||rejectAgent,status=approveAgent?'approved':'rejected';const {error}=await db.from('profiles').update({status}).eq('id',id);if(error)throw error;const req=state.requests.find(r=>String(r.requester_id)===String(id)&&r.request_type==='agent_registration'&&r.status==='pending');if(req){const {error:re}=await db.from('requests').update({status,reviewed_at:new Date().toISOString()}).eq('id',req.id);if(re)throw re;}
+  }else if(approveReq||rejectReq){const id=approveReq||rejectReq,req=state.requests.find(r=>String(r.id)===String(id));if(!req)return;const status=approveReq?'approved':'rejected';
+   if(approveReq&&req.request_type==='shop_creation'){const username=String((req.details||{}).username||'').trim();if(!username)throw new Error('Shop username is missing.');const {error:se}=await db.from('shops').insert({agent_id:req.requester_id,username,balance:0,status:'approved'});if(se)throw se;}
+   const {error}=await db.from('requests').update({status,reviewed_at:new Date().toISOString()}).eq('id',id);if(error)throw error;
+   if(req.request_type==='agent_registration'){const {error:pe}=await db.from('profiles').update({status}).eq('id',req.requester_id);if(pe)throw pe;}
+  }else{return;}
+  await loadData();render();message('dashboardMessage','Changes saved.','green');
+ }catch(err){message('dashboardMessage',err.message||'Action failed. Check Supabase permissions and RLS policies.','red');}
+});
+(async()=>{try{const {data:{session}}=await db.auth.getSession();if(session){const {data:prof,error}=await db.from('profiles').select('id,username,full_name,phone,role,status').eq('id',session.user.id).single();if(!error&&prof&&prof.status==='approved')await openDashboard(session.user,prof);else await db.auth.signOut();}}catch(_){} })();
+})();
+</script>
+</body>
+</html>
