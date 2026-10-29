@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -106,7 +107,7 @@ th{background:#0f1727;color:#aebbd0;font-weight:750}td{color:#e6ebf4}tr:last-chi
       <div class="stat"><small>Account Status</small><strong style="font-size:18px;color:#7ce9ba">Approved</strong></div>
     </div>
     <div class="nav"><button class="active" data-agent-tab="myshops" type="button">My Shops</button><button data-agent-tab="newshop" type="button">Request New Shop</button></div>
-    <section id="agentMyShops" class="panel"><div class="panel-head"><h3>My Shops</h3><span class="muted">Admin-approved information</span></div><div class="table-wrap"><table><thead><tr><th>Shop ID</th><th>Username</th><th>Balance</th><th>Status</th></tr></thead><tbody id="myShopsBody"></tbody></table></div></section>
+    <section id="agentMyShops" class="panel"><div class="panel-head"><h3>My Shops</h3><span class="muted">Admin-approved information</span></div><div class="table-wrap"><table><thead><tr><th>Shop ID</th><th>Username</th><th>Password</th><th>Balance</th><th>Status</th></tr></thead><tbody id="myShopsBody"></tbody></table></div></section>
     <section id="agentNewShop" class="panel hidden"><h3>Request a new shop</h3><p class="sub">Your request will be sent to the administrator for approval.</p><form id="newShopForm" class="form-grid"><div class="full"><label for="shopUser">Shop Username</label><input id="shopUser" required minlength="3" placeholder="Enter requested shop username"></div><div class="full muted" style="font-size:13px">Do not enter or share a shop password here.</div><div class="full"><button class="btn full" type="submit">Submit Shop Request</button></div></form></section>
   </section>
 
@@ -146,7 +147,7 @@ function fmt(n){return Number(n||0).toLocaleString(undefined,{minimumFractionDig
 async function loadData(){
  const results=await Promise.all([
   db.from('profiles').select('id,username,full_name,phone,role,status,created_at'),
-  db.from('shops').select('id,agent_id,username,balance,status,created_at'),
+  db.from('shops').select('id,shop_id,agent_id,username,shop_password,balance,status,created_at'),
   db.from('requests').select('id,requester_id,request_type,details,status,created_at,reviewed_at')
  ]);
  const err=results.find(x=>x.error);if(err)throw err.error;
@@ -159,9 +160,9 @@ function render(){
  const mine=state.shops.filter(s=>String(s.agent_id)===String(currentUser.id));
  $('myShopCount').textContent=mine.filter(s=>s.status==='approved').length;
  $('myPendingCount').textContent=state.requests.filter(r=>String(r.requester_id)===String(currentUser.id)&&r.status==='pending').length;
- $('myShopsBody').innerHTML=mine.length?mine.map(s=>'<tr><td>'+esc(s.id)+'</td><td>'+esc(s.username)+'</td><td>'+fmt(s.balance)+'</td><td>'+statusPill(s.status)+'</td></tr>').join(''):noRows(4,'No shops yet.');
+ $('myShopsBody').innerHTML=mine.length?mine.map(s=>'<tr><td>'+esc(s.shop_id==null?s.id:s.shop_id)+'</td><td>'+esc(s.username)+'</td><td>'+esc(s.shop_password||'—')+'</td><td>'+fmt(s.balance)+'</td><td>'+statusPill(s.status)+'</td></tr>').join(''):noRows(5,'No shops yet.');
  $('allShopCount').textContent=state.shops.length;$('agentCount').textContent=state.agents.length;$('requestCount').textContent=state.requests.filter(r=>r.status==='pending').length;
- $('allShopsBody').innerHTML=state.shops.length?state.shops.map(s=>'<tr><td>'+esc(s.id)+'</td><td>'+esc(s.username)+'</td><td>'+esc((state.agents.find(a=>String(a.id)===String(s.agent_id))||{}).full_name||'Unknown')+'</td><td>'+fmt(s.balance)+'</td><td>'+statusPill(s.status)+'</td><td><button class="btn small" data-edit-shop="'+esc(s.id)+'" type="button">Edit balance</button></td></tr>').join(''):noRows(6,'No shops yet.');
+ $('allShopsBody').innerHTML=state.shops.length?state.shops.map(s=>'<tr><td>'+esc(s.shop_id==null?s.id:s.shop_id)+'</td><td>'+esc(s.username)+'</td><td>'+esc((state.agents.find(a=>String(a.id)===String(s.agent_id))||{}).full_name||'Unknown')+'</td><td>'+fmt(s.balance)+'</td><td>'+statusPill(s.status)+'</td><td><button class="btn small" data-edit-shop="'+esc(s.id)+'" type="button">Edit</button></td></tr>').join(''):noRows(6,'No shops yet.');
  $('agentsBody').innerHTML=state.agents.length?state.agents.map(a=>'<tr><td>'+esc(a.full_name)+'</td><td>'+esc(a.username)+'</td><td>'+state.shops.filter(s=>String(s.agent_id)===String(a.id)).length+'</td><td>'+statusPill(a.status)+'</td><td>'+(a.status==='pending'?'<button class="btn small" data-approve-agent="'+esc(a.id)+'" type="button">Approve</button> <button class="btn secondary small" data-reject-agent="'+esc(a.id)+'" type="button">Reject</button>':'—')+'</td></tr>').join(''):noRows(5,'No agents yet.');
  const pending=state.requests.filter(r=>r.status==='pending');
  $('requestsBody').innerHTML=pending.length?pending.map(r=>{const a=state.agents.find(x=>String(x.id)===String(r.requester_id));const d=r.details||{};return '<tr><td>'+ (r.request_type==='agent_registration'?'Agent Account':'New Shop')+'</td><td>'+esc(d.full_name||d.username||(a&& (a.full_name||a.username))||'—')+'</td><td>'+esc(d.phone||(a&&a.phone)||'—')+'</td><td>'+esc(r.createdAt)+'</td><td><button class="btn small" data-approve-request="'+esc(r.id)+'" type="button">Approve</button> <button class="btn secondary small" data-reject-request="'+esc(r.id)+'" type="button">Reject</button></td></tr>';}).join(''):noRows(5,'No pending requests.');
@@ -219,7 +220,7 @@ document.addEventListener('click',async function(e){
  const target=e.target.closest('button');if(!target)return;
  const edit=target.dataset.editShop,approveReq=target.dataset.approveRequest,rejectReq=target.dataset.rejectRequest,approveAgent=target.dataset.approveAgent,rejectAgent=target.dataset.rejectAgent;
  try{
-  if(edit!==undefined){const shop=state.shops.find(s=>String(s.id)===String(edit));if(!shop)return;const value=prompt('Set balance for shop '+shop.id+' (number only):',String(shop.balance||0));if(value===null)return;const n=Number(value);if(!Number.isFinite(n)||n<0)throw new Error('Enter a valid balance of 0 or more.');const {error}=await db.from('shops').update({balance:n}).eq('id',shop.id);if(error)throw error;
+  if(edit!==undefined){const shop=state.shops.find(s=>String(s.id)===String(edit));if(!shop)return;const shopId=prompt('Set Shop ID:',String(shop.shop_id==null?shop.id:shop.shop_id));if(shopId===null)return;if(!shopId.trim())throw new Error('Shop ID is required.');const value=prompt('Set balance (number only):',String(shop.balance||0));if(value===null)return;const n=Number(value);if(!Number.isFinite(n)||n<0)throw new Error('Enter a valid balance of 0 or more.');const password=prompt('Set shop password:',String(shop.shop_password||''));if(password===null)return;if(!password.trim())throw new Error('Shop password is required.');const {error}=await db.from('shops').update({shop_id:shopId.trim(),balance:n,shop_password:password}).eq('id',shop.id);if(error)throw error;
   }else if(approveAgent||rejectAgent){const id=approveAgent||rejectAgent,status=approveAgent?'approved':'rejected';const {error}=await db.from('profiles').update({status}).eq('id',id);if(error)throw error;const req=state.requests.find(r=>String(r.requester_id)===String(id)&&r.request_type==='agent_registration'&&r.status==='pending');if(req){const {error:re}=await db.from('requests').update({status,reviewed_at:new Date().toISOString()}).eq('id',req.id);if(re)throw re;}
   }else if(approveReq||rejectReq){const id=approveReq||rejectReq,req=state.requests.find(r=>String(r.id)===String(id));if(!req)return;const status=approveReq?'approved':'rejected';
    if(approveReq&&req.request_type==='shop_creation'){const username=String((req.details||{}).username||'').trim();if(!username)throw new Error('Shop username is missing.');const {error:se}=await db.from('shops').insert({agent_id:req.requester_id,username,balance:0,status:'approved'});if(se)throw se;}
